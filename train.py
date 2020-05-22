@@ -35,6 +35,7 @@ def train():
     for epoch in range(start_epoch, cfg.epoch):
         loss = train_once(model, train_loader, optimizer, [criterion1, criterion2], epoch, log)
         log.add_scalar('cpn_loss', loss, epoch)
+        log.flush()
         if loss < best_loss:
             best_loss = loss
             torch.save({
@@ -81,6 +82,7 @@ def train_once(model, train_loader, optimizer, criterion, epoch, log):
         loss.backward()
         optimizer.step()
         log.add_scalar('loss_epoch_{0}'.format(epoch), loss.item(), i)
+        log.flush()
         if i % cfg.print_freq == 0:
             print('epoch: ', epoch, '{0}/{1} loss_avg: {2} global_loss: {3} refine_loss: {4} loss: {5}'.format(i, len(train_loader), losses.avg, global_loss, refine_loss, loss))
     return losses.avg
