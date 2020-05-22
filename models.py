@@ -143,6 +143,16 @@ class CPN(nn.Module):
         return global_pred, refine_pred
 
 
+def ohkm(loss, top_k):
+    ohkm_loss = 0
+    for subloss in loss:
+        topk_val, topk_idx = torch.topk(subloss, k=top_k, dim=00, sorted=False)
+        temp = torch.gather(subloss, 0, topk_idx)
+        ohkm_loss += torch.sum(temp) / top_k
+    ohkm_loss /= loss.size()[0]
+    return ohkm_loss
+
+
 if __name__ == '__main__':
     x = torch.zeros((1, 3, 128, 128))
     model = CPN(resnet='50', out_shape=(64, 64))

@@ -3,3 +3,5 @@ test_imgs/*
 data/*
 __pycache__
 BEST_checkpoint.tar
+cocoapi/*
+test*

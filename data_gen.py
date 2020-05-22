@@ -6,11 +6,10 @@ import math
 import cv2
 import skimage
 import skimage.transform
-
+from PIL import Image
+import imageio
 import torch
 import torch.utils.data as data
-
-from utils.osutils import *
 from utils.imutils import *
 from utils.transforms import *
 
@@ -148,20 +147,22 @@ class MscocoMulti(data.Dataset):
 
     def __getitem__(self, index):
         a = self.anno[index]
+        # print(a)
         image_name = a['imgInfo']['img_paths']
         img_path = os.path.join(self.img_folder, image_name)
+        print(img_path)
         if self.is_train:
             points = np.array(a['unit']['keypoints']).reshape(self.num_class, 3).astype(np.float32)
         gt_bbox = a['unit']['GT_bbox']
 
-        image = scipy.misc.imread(img_path, mode='RGB')
+        image = imageio.imread(img_path)
         if self.is_train:
             image, points, details = self.augmentationCropImage(image, gt_bbox, points)
         else:
             image, details = self.augmentationCropImage(image, gt_bbox)
 
         if self.is_train:
-            image, points = self.data_augmentation(image, points, a['operation'])
+            image, points = self.data_augmentation(image, points, random.randint(1, 2))
             img = im_to_torch(image)  # CxHxW
 
             # Color dithering
@@ -204,3 +205,65 @@ class MscocoMulti(data.Dataset):
         return len(self.anno)
 
 
+if __name__ == '__main__':
+    from config import cfg
+    from torch.utils.data import DataLoader
+
+    dataset = MscocoMulti(cfg, train=True)
+    train_loader = DataLoader(dataset, batch_size=3, shuffle=True)
+    for img, target, valid, mata in train_loader:
+        print(valid.shape)
+        print(valid)
+        print(len(target))
+        print(target[0].shape)
+        valid = (valid > 1.0).type(torch.FloatTensor).unsqueeze(2).unsqueeze(3)
+        target = target[0] * valid
+        i = 0
+        for t in target[0]:
+            sums = []
+            for h in t:
+                sums.append(h.sum().item())
+            print(i, sum(sums))
+            i += 1
+
+        break
+        #
+        # train = MscocoMulti(cfg, train=True)
+        # img, target, valid, mata = train[0]
+        # print(valid)
+        # print(mata['GT_bbox'])
+        # mean = cfg.pixel_means
+        # img = img * 255
+        # for i, im in enumerate(img):
+        #     im = im.add_(mean[i])
+        # img = np.transpose(np.array(img), (1, 2, 0))
+        # img = np.array(img, dtype=np.uint8)
+
+        # for t in target:
+        #     print(t.shape)
+        #     im = t[2]
+        #     im = im * 255
+        #     print(im.shape)
+        #     im = np.array(im, dtype=np.uint8)
+        #     im=Image.fromarray(im)
+        #     im.show()
+
+        # cv2.imshow('', img)
+        # cv2.waitKey(0)
+        # img = Image.fromarray(img)
+        # img.show()
+
+        # img1 = imageio.imread('data/COCO2017/val2017/000000000139.jpg')
+        # print(img1.shape)
+        # print(img1[0][0])
+        # image2 = np.array(Image.open('data/COCO2017/val2017/000000000139.jpg'))
+        # print(image2.shape)
+        # print(image2[0][0])
+        # img3 = cv2.imread('data/COCO2017/val2017/000000397133.jpg')
+        # cv2.circle(img3, (388, 69), radius=3, thickness=3, color=(255, 255, 255))
+        # cv2.circle(img3, (498, 347), radius=3, thickness=3, color=(255, 255, 255))
+        # print(img3.shape)
+        # print(img3[0][0])
+        # print(type(img3[0][0][0]))
+        # cv2.imshow('', img3)
+        # cv2.waitKey(0)
