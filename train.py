@@ -52,24 +52,24 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
     criterion1, criterio2 = criterion
     for i, (inputs, targets, valid, meta) in enumerate(train_loader):
         inputs = inputs.cuda()
-        print(inputs.shape)
-        print(len(targets), print(targets[-1].shape))
+        # print(inputs.shape)
+        # print(len(targets), print(targets[-1].shape))
         refine_target = targets[-1].cuda()
         global_pred, refine_pred = model(inputs)
 
         global_loss = 0
         for pred, label in zip(global_pred, targets):
             # label*valid  (mask some heatmap)
-            print(pred.shape, label.shape)
+            # print(pred.shape, label.shape)
             mask = (valid > 1.0).type(torch.FloatTensor).unsqueeze(2).unsqueeze(3)
-            print(mask.shape)
+            # print(mask.shape)
             label = label * mask
-            print(label.shape)
+            # print(label.shape)
             global_loss += criterion1(pred, label.cuda()) / 2
         refine_loss = criterio2(refine_pred, refine_target)
         refine_loss = refine_loss.mean(dim=3).mean(dim=2)
         mask = (valid > 0.0).type(torch.FloatTensor)
-        print(refine_pred.shape, mask.shape)
+        # print(refine_pred.shape, mask.shape)
         refine_loss = refine_loss * mask.cuda()
         refine_loss = ohkm(refine_loss, 8)
         loss = global_loss + refine_loss
@@ -78,8 +78,8 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-        print(loss, global_loss, refine_loss)
+        if i % cfg.print_freq == 0:
+            print('epoch: ', epoch, '{0}/{1} loss: {2} global_loss: {3} refine_loss: {4}'.format(i, len(train_loader), loss, global_loss, refine_loss))
     return losses.avg
 
 

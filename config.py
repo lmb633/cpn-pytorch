@@ -11,11 +11,11 @@ def add_pypath(path):
 
 class Config:
     checkpoint = 'BEST_checkpoint.tar'
-    batch_size = 16
+    batch_size = 64
     weight_decay = 1e-5
     mon = 0.0
     epoch = 1000
-
+    print_freq = 100
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     this_dir_name = cur_dir.split('/')[-1]
     # root_dir = os.path.join(cur_dir, '..')
