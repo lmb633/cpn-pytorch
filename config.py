@@ -28,7 +28,7 @@ class Config:
     lr_dec_epoch = list(range(6, 40, 6))
 
     num_class = 17
-    img_path = os.path.join(root_dir, 'data', 'COCO2017', 'val2017')
+    img_path = os.path.join(root_dir, 'data', 'COCO2017', 'train2017')
     symmetry = [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10), (11, 12), (13, 14), (15, 16)]
 
     # data augmentation setting
@@ -45,7 +45,7 @@ class Config:
     gk11 = (11, 11)
     gk9 = (9, 9)
     gk7 = (7, 7)
-    gt_path = os.path.join(root_dir, 'data', 'COCO2017', 'annotations', 'COCO_2017_val.json')
+    gt_path = os.path.join(root_dir, 'data', 'COCO2017', 'annotations', 'COCO_2017_train.json')
 
 
 cfg = Config()

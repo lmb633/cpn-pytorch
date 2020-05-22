@@ -10,28 +10,30 @@ from utils.evaluation import AverageMeter
 from config import cfg
 
 
-def train(args):
+def train():
     torch.manual_seed(2)
     np.random.seed(2)
-    checkpoint_path = args.checkpoint
+    checkpoint_path = cfg.checkpoint
     start_epoch = 0
     best_loss = float('inf')
     epoch_since_improvement = 0
 
-    dataset = MscocoMulti(args, train=True)
-    train_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
+    dataset = MscocoMulti(cfg, train=True)
+    train_loader = DataLoader(dataset, batch_size=cfg.batch_size, shuffle=True)
     model = CPN()
     model = torch.nn.DataParallel(model).cuda()
     if os.path.exists(checkpoint_path):
+        print('=========load checkpoint========')
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint['state_dict'])
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=args.mon, weight_decay=args.weight_decay)
+        start_epoch = checkpoint['epoch']
+    optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=cfg.mon, weight_decay=cfg.weight_decay)
     criterion1 = torch.nn.MSELoss().cuda()
     criterion2 = torch.nn.MSELoss(reduction='none').cuda()
 
     log = SummaryWriter(log_dir='data/log', comment='cpn')
-    for epoch in range(start_epoch, args.epoch):
-        loss = train_once(model, train_loader, optimizer, [criterion1, criterion2], epoch)
+    for epoch in range(start_epoch, cfg.epoch):
+        loss = train_once(model, train_loader, optimizer, [criterion1, criterion2], epoch, log)
         log.add_scalar('cpn_loss', loss, epoch)
         if loss < best_loss:
             best_loss = loss
@@ -43,12 +45,12 @@ def train(args):
             epoch_since_improvement = 0
         else:
             epoch_since_improvement += 1
+    log.close()
 
 
-def train_once(model, train_loader, optimizer, criterion, epoch):
+def train_once(model, train_loader, optimizer, criterion, epoch, log):
     model.train()
     losses = AverageMeter()
-    loss_list = []
     criterion1, criterio2 = criterion
     for i, (inputs, targets, valid, meta) in enumerate(train_loader):
         inputs = inputs.cuda()
@@ -78,10 +80,11 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        log.add_scalar('loss_epoch_{0}'.format(epoch), loss.item(), i)
         if i % cfg.print_freq == 0:
             print('epoch: ', epoch, '{0}/{1} loss: {2} global_loss: {3} refine_loss: {4}'.format(i, len(train_loader), loss, global_loss, refine_loss))
     return losses.avg
 
 
 if __name__ == '__main__':
-    train(cfg)
+    train()

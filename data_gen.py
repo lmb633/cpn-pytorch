@@ -210,24 +210,11 @@ if __name__ == '__main__':
     from torch.utils.data import DataLoader
 
     dataset = MscocoMulti(cfg, train=True)
-    train_loader = DataLoader(dataset, batch_size=64, shuffle=True)
+    train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
     for img, target, valid, mata in train_loader:
-        print(img.shape)
-        print(valid.shape)
-        print(valid)
-        print(len(target))
-        print(target[0].shape)
-        valid = (valid > 1.0).type(torch.FloatTensor).unsqueeze(2).unsqueeze(3)
-        target = target[0] * valid
-        i = 0
-        for t in target[0]:
-            sums = []
-            for h in t:
-                sums.append(h.sum().item())
-            print(i, sum(sums))
-            i += 1
-
+        print(len(train_loader))
         break
+
 
     # img3 = cv2.imread('data/COCO2017/val2017/000000000139.jpg')
     # img3 = img3[:, :, ::-1]
