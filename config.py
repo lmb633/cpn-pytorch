@@ -37,14 +37,14 @@ class Config:
     rot_factor = 45
 
     pixel_means = np.array([122.7717, 115.9465, 102.9801])  # RGB
-    data_shape = (384, 288)  # height, width
-    output_shape = (96, 72)  # height, width
-    gaussain_kernel = (13, 13)
-    #
-    gk15 = (23, 23)
-    gk11 = (17, 17)
-    gk9 = (13, 13)
-    gk7 = (9, 9)
+    data_shape = (256, 192)
+    output_shape = (64, 48)
+    gaussain_kernel = (7, 7)
+
+    gk15 = (15, 15)
+    gk11 = (11, 11)
+    gk9 = (9, 9)
+    gk7 = (7, 7)
     gt_path = os.path.join(root_dir, 'data', 'COCO2017', 'annotations', 'COCO_2017_val.json')
 
 

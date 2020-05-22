@@ -27,7 +27,7 @@ def train(args):
         model.load_state_dict(checkpoint['state_dict'])
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=args.mon, weight_decay=args.weight_decay)
     criterion1 = torch.nn.MSELoss().cuda()
-    criterion2 = torch.nn.MSELoss(reduce=False).cuda()
+    criterion2 = torch.nn.MSELoss(reduction='none').cuda()
 
     log = SummaryWriter(log_dir='data/log', comment='cpn')
     for epoch in range(start_epoch, args.epoch):

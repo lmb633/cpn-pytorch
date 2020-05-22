@@ -77,7 +77,6 @@ class MscocoMulti(data.Dataset):
             joints[:, 1] *= y_ratio
             label = joints[:, :2].copy()
             valid = joints[:, 2].copy()
-
         img = cv2.resize(bimg[min_y:max_y, min_x:max_x, :], (width, height))
         details = np.asarray([min_x - add, min_y - add, max_x - add, max_y - add]).astype(np.float)
 
@@ -150,12 +149,13 @@ class MscocoMulti(data.Dataset):
         # print(a)
         image_name = a['imgInfo']['img_paths']
         img_path = os.path.join(self.img_folder, image_name)
-        print(img_path)
+        # print(img_path)
         if self.is_train:
             points = np.array(a['unit']['keypoints']).reshape(self.num_class, 3).astype(np.float32)
         gt_bbox = a['unit']['GT_bbox']
 
-        image = imageio.imread(img_path)
+        image = cv2.imread(img_path)
+        image = image[:, :, ::-1]
         if self.is_train:
             image, points, details = self.augmentationCropImage(image, gt_bbox, points)
         else:
@@ -210,8 +210,9 @@ if __name__ == '__main__':
     from torch.utils.data import DataLoader
 
     dataset = MscocoMulti(cfg, train=True)
-    train_loader = DataLoader(dataset, batch_size=3, shuffle=True)
+    train_loader = DataLoader(dataset, batch_size=64, shuffle=True)
     for img, target, valid, mata in train_loader:
+        print(img.shape)
         print(valid.shape)
         print(valid)
         print(len(target))
@@ -227,43 +228,45 @@ if __name__ == '__main__':
             i += 1
 
         break
-        #
-        # train = MscocoMulti(cfg, train=True)
-        # img, target, valid, mata = train[0]
-        # print(valid)
-        # print(mata['GT_bbox'])
-        # mean = cfg.pixel_means
-        # img = img * 255
-        # for i, im in enumerate(img):
-        #     im = im.add_(mean[i])
-        # img = np.transpose(np.array(img), (1, 2, 0))
-        # img = np.array(img, dtype=np.uint8)
 
-        # for t in target:
-        #     print(t.shape)
-        #     im = t[2]
-        #     im = im * 255
-        #     print(im.shape)
-        #     im = np.array(im, dtype=np.uint8)
-        #     im=Image.fromarray(im)
-        #     im.show()
+    # img3 = cv2.imread('data/COCO2017/val2017/000000000139.jpg')
+    # img3 = img3[:, :, ::-1]
+    # print(img3.shape)
+    # print(img3[0][0])
+    # img1 = imageio.imread('data/COCO2017/val2017/000000000139.jpg')
+    # print(img1.shape)
+    # print(img1[0][0])
+    # image2 = np.array(Image.open('data/COCO2017/val2017/000000000139.jpg'))
+    # print(image2.shape)
+    # print(image2[0][0])
 
-        # cv2.imshow('', img)
-        # cv2.waitKey(0)
-        # img = Image.fromarray(img)
-        # img.show()
 
-        # img1 = imageio.imread('data/COCO2017/val2017/000000000139.jpg')
-        # print(img1.shape)
-        # print(img1[0][0])
-        # image2 = np.array(Image.open('data/COCO2017/val2017/000000000139.jpg'))
-        # print(image2.shape)
-        # print(image2[0][0])
-        # img3 = cv2.imread('data/COCO2017/val2017/000000397133.jpg')
-        # cv2.circle(img3, (388, 69), radius=3, thickness=3, color=(255, 255, 255))
-        # cv2.circle(img3, (498, 347), radius=3, thickness=3, color=(255, 255, 255))
-        # print(img3.shape)
-        # print(img3[0][0])
-        # print(type(img3[0][0][0]))
-        # cv2.imshow('', img3)
-        # cv2.waitKey(0)
+    # print(img3[0][0])
+    # print(type(img3[0][0][0]))
+    # cv2.imshow('', img3)
+    # cv2.waitKey(0)
+
+    # train = MscocoMulti(cfg, train=True)
+    # img, target, valid, mata = train[0]
+    # print(valid)
+    # print(mata['GT_bbox'])
+    # mean = cfg.pixel_means
+    # img = img * 255
+    # for i, im in enumerate(img):
+    #     im = im.add_(mean[i])
+    # img = np.transpose(np.array(img), (1, 2, 0))
+    # img = np.array(img, dtype=np.uint8)
+
+    # for t in target:
+    #     print(t.shape)
+    #     im = t[2]
+    #     im = im * 255
+    #     print(im.shape)
+    #     im = np.array(im, dtype=np.uint8)
+    #     im=Image.fromarray(im)
+    #     im.show()
+
+    # cv2.imshow('', img)
+    # cv2.waitKey(0)
+    # img = Image.fromarray(img)
+    # img.show()
