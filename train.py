@@ -7,6 +7,7 @@ from data_gen import MscocoMulti
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from utils.evaluation import AverageMeter
+from config import cfg
 
 
 def train(args):
@@ -83,15 +84,4 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
 
 
 if __name__ == '__main__':
-    from torch.autograd import Variable
-
-    x = torch.rand((2, 3, 4, 4))
-    print(x.size(0))
-    x = x.mean(dim=3).mean(dim=2)
-    print(x)
-    x = x[0]
-    print(x)
-    topk_val, topk_idx = torch.topk(x, k=2, dim=0, sorted=True)
-    print(topk_idx, topk_val)
-    loss = torch.gather(x, 0, topk_idx)
-    print(loss)
+    train(cfg)
