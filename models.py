@@ -125,7 +125,7 @@ class RefineNet(nn.Module):
 
 
 class CPN(nn.Module):
-    def __init__(self, channel_sets=[2048, 1024, 512, 256], resnet='101', out_shape=(64, 48), n_class=15, pretrained=True):
+    def __init__(self, channel_sets=[2048, 1024, 512, 256], resnet='101', out_shape=(64, 48), n_class=17, pretrained=True):
         super(CPN, self).__init__()
         if resnet == '50':
             self.resnet = resnet50(pretrained)

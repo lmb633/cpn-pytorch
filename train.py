@@ -53,8 +53,8 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
     for i, (inputs, targets, valid, meta) in enumerate(train_loader):
         inputs = inputs.cuda()
         print(inputs.shape)
+        print(len(targets), print(targets[-1].shape))
         refine_target = targets[-1].cuda()
-        print(len(targets), print(refine_target.shape))
         global_pred, refine_pred = model(inputs)
 
         global_loss = 0
@@ -70,7 +70,7 @@ def train_once(model, train_loader, optimizer, criterion, epoch):
         refine_loss = refine_loss.mean(dim=3).mean(dim=2)
         mask = (valid > 0.0).type(torch.FloatTensor)
         print(refine_pred.shape, mask.shape)
-        refine_loss = refine_loss * mask
+        refine_loss = refine_loss * mask.cuda()
         refine_loss = ohkm(refine_loss, 8)
         loss = global_loss + refine_loss
         losses.update(loss.item(), inputs.size(0))
