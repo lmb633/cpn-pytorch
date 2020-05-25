@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from utils.evaluation import AverageMeter
 from config import cfg
+from utils.misc import adjust_learning_rate
 
 
 def train():
@@ -33,6 +34,7 @@ def train():
 
     log = SummaryWriter(log_dir='data/log', comment='cpn')
     for epoch in range(start_epoch, cfg.epoch):
+        adjust_learning_rate(optimizer, epoch, cfg.lr_dec_epoch, cfg.lr_gamma)
         loss = train_once(model, train_loader, optimizer, [criterion1, criterion2], epoch, log)
         log.add_scalar('cpn_loss', loss, epoch)
         log.flush()
