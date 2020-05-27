@@ -210,10 +210,18 @@ if __name__ == '__main__':
     from torch.utils.data import DataLoader
 
     dataset = MscocoMulti(cfg, train=True)
-    train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
     for img, target, valid, mata in train_loader:
-        print(len(train_loader))
+        print(mata)
         break
+    # {'index': tensor([2456]), 'imgID': tensor([208363]), 'GT_bbox': tensor([[196,  73, 277, 203]], dtype=torch.int32), 'img_path': ['E:\\git\\cpm\\cpn-pytorch\\data\\COCO2017\\val2017\\000000208363.jpg'], 'augmentation_details': tensor([[157.,  32., 315., 243.]], dtype=torch.float64)}
+
+    # img = cv2.imread('data\\COCO2017\\val2017\\000000208363.jpg')
+    # cv2.circle(img, (196, 73), radius=3, thickness=3, color=(255, 0, 255))
+    # cv2.circle(img, (277, 203), radius=3, thickness=3, color=(255, 0, 255))
+    # cv2.imshow('', img)
+    # cv2.waitKey(-1)
+
 
 
     # img3 = cv2.imread('data/COCO2017/val2017/000000000139.jpg')

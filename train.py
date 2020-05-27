@@ -21,7 +21,7 @@ def train():
 
     dataset = MscocoMulti(cfg, train=True)
     train_loader = DataLoader(dataset, batch_size=cfg.batch_size, shuffle=True)
-    model = CPN()
+    model = CPN(out_shape=cfg.output_shape)
     model = torch.nn.DataParallel(model).cuda()
     if os.path.exists(checkpoint_path):
         print('=========load checkpoint========')
