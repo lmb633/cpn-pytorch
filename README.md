@@ -12,3 +12,5 @@ a pytorch implementation of CPN (Cascaded Pyramid Network)
 ![image](https://github.com/lmb633/cpn-pytorch/tree/master/images/64.jpg)
 ![image](https://github.com/lmb633/cpn-pytorch/tree/master/images/70.jpg)
 ![image](https://github.com/lmb633/cpn-pytorch/tree/master/images/1590485847(1).png)
+
+## 384X288 is training
